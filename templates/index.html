@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Streaming with Dominant Color</title>
+</head>
+<body>
+    <div style="display: flex; flex-direction: column; align-items: center;">
+        <img id="video_feed", src="video_feed" width="640" height="480" />
+        <div id="dominant_color" style="margin-top: 10px; margin-bottom: 10px; font-weight: bold;"></div>
+        <div id="colorSquare" style="height: 30px; width: 30px;"></div>
+    </div>
+
+    <script>
+        var video = document.getElementById('video_feed');
+        var dominantColorElement = document.getElementById('dominant_color');
+        var colorSquareElement = document.getElementById('colorSquare');
+
+        // Function to update dominant color
+        function updateDominantColor(color) {
+            dominantColorElement.innerText = 'Dominant Color: RGB('+ color +')';
+        }
+
+        function updateColorSquare(newColor) {
+            colorSquareElement.style.backgroundColor = `rgb(${newColor[0]},${newColor[1]},${newColor[2]})`;
+        }
+
+        // Function to update video feed and dominant color
+        function updateColor() {
+            fetch('/color')
+                .then(response => response.text())
+                .then(data => {
+                    updateColorSquare(data.split(',').map(Number));
+                    updateDominantColor(data);
+                    setTimeout(updateColor, 5000);
+                })
+                .catch(err => console.error('Error:', err));
+        }
+
+        // Call the update function when the page loads
+        document.addEventListener('DOMContentLoaded', function () {
+            updateColor();
+        });
+    </script>
+</body>
+</html>
